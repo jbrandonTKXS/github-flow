@@ -1,0 +1,17 @@
+trigger:
+  - master
+pr: none
+
+pool:
+  vmImage: ubuntu-latest
+ 
+stages:
+
+  - stage: Build
+    displayName: 'Building Liquibase Artifact'
+    dependsOn: PreBuildCheck
+    jobs:
+    - job: Build
+      steps:
+      - publish: $(Agent.BuildDirectory)/s/
+        artifact: changelogs
