@@ -23,15 +23,17 @@ stages:
 
     - job: TestingMigration
 
-       - checkout: master
+       - checkout: self
        
+       - script: git switch master
+
        - script: docker-compose up -d
          displayName: 'Migration - Starting Docker Container'
 
        - script: docker-compose run --rm liquibase /liquibase/liquibase --defaultsFile "changelog/liquibase.properties" update
          displayName: 'Migration - Update DB To Master'
 
-       - checkout: self
+       - script: git switch $BUILD_SOURCEBRANCH
 
        - script: docker-compose run --rm -v $(cnn_dev_database.secureFilePath):/liquibase/changelog/liquibase.properties liquibase /liquibase/liquibase --defaultsFile "changelog/liquibase.properties" status --verbose
          displayName: 'Migration - Feature Liquibase Status'
