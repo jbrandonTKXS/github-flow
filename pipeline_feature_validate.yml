@@ -17,31 +17,29 @@ stages:
 
        - script: docker-compose run --rm liquibase /liquibase/liquibase --defaultsFile "changelog/liquibase.properties" update
          displayName: 'Full Build - Running Liquibase Update'
-        
-       - script: docker-compose down -v
-         displayName: 'Full Build - Stopping Docker Container'
 
     - job: TestingMigration
+      steps:
 
        - checkout: self
        
        - script: git switch master
-
+       
        - script: docker-compose up -d
          displayName: 'Migration - Starting Docker Container'
 
        - script: docker-compose run --rm liquibase /liquibase/liquibase --defaultsFile "changelog/liquibase.properties" update
          displayName: 'Migration - Update DB To Master'
 
-       - script: git switch $BUILD_SOURCEBRANCH
+       - script: git checkout $BUILD_SOURCEVERSION
 
-       - script: docker-compose run --rm -v $(cnn_dev_database.secureFilePath):/liquibase/changelog/liquibase.properties liquibase /liquibase/liquibase --defaultsFile "changelog/liquibase.properties" status --verbose
+       - script: docker-compose run --rm liquibase /liquibase/liquibase --defaultsFile "changelog/liquibase.properties" status --verbose
          displayName: 'Migration - Feature Liquibase Status'
 
-       - script: docker-compose run --rm -v $(cnn_dev_database.secureFilePath):/liquibase/changelog/liquibase.properties liquibase /liquibase/liquibase --defaultsFile "changelog/liquibase.properties" updateSQL > update.sql
+       - script: docker-compose run --rm liquibase /liquibase/liquibase --defaultsFile "changelog/liquibase.properties" updateSQL > update.sql
          displayName: 'Migration - Generating Update SQL'
 
-       - script: docker-compose run --rm -v $(cnn_dev_database.secureFilePath):/liquibase/changelog/liquibase.properties liquibase /liquibase/liquibase --defaultsFile "changelog/liquibase.properties" update
+       - script: docker-compose run --rm liquibase /liquibase/liquibase --defaultsFile "changelog/liquibase.properties" update
          displayName: 'Migration - Update DB To Feature'
 
        - publish: $(System.DefaultWorkingDirectory)/update.sql
