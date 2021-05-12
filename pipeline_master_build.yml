@@ -9,7 +9,6 @@ stages:
 
   - stage: Build
     displayName: 'Building Liquibase Artifact'
-    dependsOn: PreBuildCheck
     jobs:
     - job: Build
       steps:
