@@ -10,6 +10,7 @@ stages:
    displayName: 'Verifying...'
    jobs:
     - job: TestingFullBuild
+      displayName: 'Testing Full DB Build'
       steps:
       
        - script: docker-compose up -d
@@ -19,6 +20,7 @@ stages:
          displayName: 'Full Build - Running Liquibase Update'
 
     - job: TestingMigration
+      displayName: 'Testing DB Migration'
       steps:
 
        - checkout: self
@@ -36,11 +38,11 @@ stages:
        - script: docker-compose run --rm liquibase /liquibase/liquibase --defaultsFile "changelog/liquibase.properties" status --verbose
          displayName: 'Migration - Feature Liquibase Status'
 
-       - script: docker-compose run --rm liquibase /liquibase/liquibase --defaultsFile "changelog/liquibase.properties" updateSQL > update_${BUILD_SOURCEBRANCHNAME}.sql
+       - script: docker-compose run --rm liquibase /liquibase/liquibase --defaultsFile "changelog/liquibase.properties" updateSQL > update_${BUILD_BUILDNUMBER}.sql
          displayName: 'Migration - Generating Update SQL'
 
        - script: docker-compose run --rm liquibase /liquibase/liquibase --defaultsFile "changelog/liquibase.properties" update
          displayName: 'Migration - Update DB To Feature'
 
-       - publish: $(System.DefaultWorkingDirectory)/update_${BUILD_SOURCEBRANCHNAME}.sql
+       - publish: $(System.DefaultWorkingDirectory)/update_$(Build.BuildNumber).sql
          artifact: update_sql
