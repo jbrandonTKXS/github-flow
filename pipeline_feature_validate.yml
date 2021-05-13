@@ -42,5 +42,5 @@ stages:
        - script: docker-compose run --rm liquibase /liquibase/liquibase --defaultsFile "changelog/liquibase.properties" update
          displayName: 'Migration - Update DB To Feature'
 
-       - publish: $(System.DefaultWorkingDirectory)/update_$(Build.SouceBranchName).sql
-         artifact: $(Build.SourceBranchName)
+       - publish: $(System.DefaultWorkingDirectory)/update_${BUILD_SOURCEBRANCHNAME}.sql
+         artifact: update_sql
