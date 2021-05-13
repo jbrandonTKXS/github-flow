@@ -12,5 +12,12 @@ stages:
     jobs:
     - job: Build
       steps:
-      - publish: $(Agent.BuildDirectory)/s/
-        artifact: changelogs
+      - script: |
+                mkdir $(Agent.BuildDirectory)/changelog
+                cp -r $(Agent.BuildDirectory)/s/build $(Agent.BuildDirectory)/changelog/build
+                cp -r $(Agent.BuildDirectory)/s/code $(Agent.BuildDirectory)/changelog/code
+                cp -r $(Agent.BuildDirectory)/s/data $(Agent.BuildDirectory)/changelog/data
+                cp -r $(Agent.BuildDirectory)/s/verify $(Agent.BuildDirectory)/changelog/verify
+                cp $(Agent.BuildDirectory)/s/master.changelog.xml $(Agent.BuildDirectory)/changelog/master.changelog.xml
+      - publish: $(Agent.BuildDirectory)/changelog/
+        artifact: changelog
